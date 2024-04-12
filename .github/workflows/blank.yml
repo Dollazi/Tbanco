@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [ "develop", "main" ]
+
+  pull_request:
+    branches: [ "develop", "main" ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run a one-line script
+        run: echo Hello, world!
+
+      - name: Run a multi-line script
+        run: |
+          echo Add other actions to build,
+          echo test, and deploy your project.
+
+      - name: Create PR for develop
+        if: github.ref == 'refs/heads/develop'
+        uses: repo-sync/pull-request@v2
+        with:
+          destination_branch: "develop"
+          pr_title: "Automated PR for develop"
+          pr_body: "Automatic PR for changes in develop"
+          pr_label: "automated pr"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create PR for main
+        if: github.ref == 'refs/heads/main'
+        uses: repo-sync/pull-request@v2
+        with:
+          destination_branch: "main"
+          pr_title: "Automated PR for main"
+          pr_body: "Automatic PR for changes merged into develop"
+          pr_label: "automated pr"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
